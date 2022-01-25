@@ -82,6 +82,10 @@ const router = new Router({
       path: "/Ocean",
       component: () => import("../components/Ocean")
     },
+    {
+      path: "/EarthMatrix",
+      component: () => import("../components/EarthMatrix")
+    },
     // {
     //   path: "/Shader",
     //   component: () => import("../components/Shader")
@@ -105,6 +109,46 @@ const router = new Router({
     {
       path: "/waves",
       component: () => import("../components/waves")
+    },
+    {
+      path: "/Rotation",
+      component: () => import("../components/Rotation")
+    },
+    {
+      path: "/Line",
+      component: () => import("../components/Line")
+    },
+    {
+      path: "/LineShape",
+      component: () => import("../components/LineShape")
+    },
+    {
+      path: "/Material",
+      component: () => import("../components/Material")
+    },
+    {
+      path: "/LinePlane",
+      component: () => import("../components/LinePlane")
+    },
+    {
+      path: "/Example",
+      component: () => import("../components/Example")
+    },
+    {
+      path: "/LineVector",
+      component: () => import("../components/LineVector")
+    },
+    {
+      path: "/LineGeometry",
+      component: () => import("../components/LineGeometry")
+    },
+    {
+      path: "/testThickLine",
+      component: () => import("../components/testThickLine")
+    },
+    {
+      path: "/Duang",
+      component: () => import("../components/Duang")
     }
   ],
 });

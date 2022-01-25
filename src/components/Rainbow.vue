@@ -27,21 +27,25 @@ export default {
   methods: {
     init: function () {
       this.scene = new THREE.Scene();
-      let geometry = new THREE.PlaneGeometry(10, 3, 20);
+      let geometry = new THREE.PlaneGeometry(1, 1, 20);
       let axis = new THREE.AxisHelper(250);
       this.scene.add(axis);
 
-      let arc1 = new THREE.ArcCurve(0, 0, 15, -Math.PI,0,  true);
-      let arc2 = new THREE.ArcCurve(0, 0, 20, -Math.PI,0,  true);
+      let arc1 = new THREE.ArcCurve(0, 0, 15, -Math.PI, 0,  true);
+      let arc2 = new THREE.ArcCurve(0, 0, 20, -Math.PI, 0,  true);
       let arr1 = arc1.getPoints(20);
       //console.log(arr1);
       let arr2 = arc2.getPoints(20);
       //console.log(arr2);
       let arr = arr2.concat(arr1);
+      console.log(arr);
       geometry.setFromPoints(arr);
+
+      // geometry.setFromPoints([new THREE.Vector2(3,0), new THREE.Vector2(1,0), new THREE.Vector2(3,2), new THREE.Vector2(1,2)])
 
       let textureLoader = new THREE.TextureLoader();
       const material = new THREE.MeshBasicMaterial({
+        // color: "red",
       });
       textureLoader.load(rainbow, function (texture) {
         material.map = texture

@@ -43,8 +43,9 @@ varying vec2 vUv;
 uniform sampler2D map;
 
 void main() {
-	vec2 st = vUv; //gl_FragCoord.xy / u_resolution;
-    gl_FragColor = texture2D(map, vec2(st.t, st.s));
+	vec2 st = vUv; 
+    gl_FragColor = texture2D(map, vec2(st.s, st.t));
+}
     // vec2 st = gl_PointCoord.xy;
     //矩形色带
     // st.y = float(st.y);
@@ -78,7 +79,5 @@ void main() {
 // } else if ((st.y > y3 && st.y < y2) ) {
 //     gl_FragColor = vec4(1.0,1.0,0.0,1.0);
 // }
-
-}
 
 

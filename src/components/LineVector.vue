@@ -14,6 +14,7 @@ import mixins from "../mixins/back.js";
 import arrow from "../assets/arrow.webp";
 import fs from "./glsl/line.fs";
 import vs from "./glsl/line.vs";
+
 export default {
   mixins: [mixins],
   data() {
@@ -26,7 +27,7 @@ export default {
       thickpoints: [],
       points: [
           // {x: 1, y: 0}, {x: 2, y: 4}, {x: 2, y: 6}, {x: 20, y: 20}, {x: 30, y: 90}
-          {x: -1, z: 0}, {x: -2, z: 4}, {x: -2, z: 6}, {x: -20, z: 20}, {x: -20, z: -90}
+          {x: -1, y: 0}, {x: -2, y: -4}, {x: -2, y: -6}, {x: -20, y: -20}, {x: -30, y: -90}
       ],
       uv: [],
       width: 2,
@@ -46,7 +47,9 @@ export default {
       const rectangle = new THREE.PlaneGeometry(1,1,2 * this.n - 3,1);
       this.downPosition = this.downPosition.reverse();
       this.upPosition = this.upPosition.reverse();
-      console.log('z:', this.downPosition[0].z);
+      for (let i = 0; i < this.upPosition.length; i++) {
+        console.log(this.upPosition[i].x, this.upPosition[i].y, this.downPosition[i].x, this.downPosition[i].y);
+      }
       rectangle.setFromPoints(this.downPosition.concat(this.upPosition));
       let upUv = [], downUv = [];
       for (let i = this.uv.length - 1; i >= 0; i--) {
@@ -54,23 +57,23 @@ export default {
         upUv.push(uv,1);
         downUv.push(uv,0);
       }
-      rectangle.attributes.uv = new THREE.Float32BufferAttribute(downUv.concat(upUv), 2);
+      rectangle.attributes.uv =   new THREE.Float32BufferAttribute(downUv.concat(upUv), 2);
       // console.log(upUv.reverse());
-      console.log(this.uv);
-      console.log(this.upPosition.reverse());
+    
       let uniforms = {
         map: { value: new THREE.TextureLoader().load(arrow) },
       };
       uniforms["map"].value.wrapS = uniforms["map"].value.wrapT =
         THREE.RepeatWrapping;
       
+
       let material = new THREE.ShaderMaterial({
         uniforms: uniforms,
         vertexShader: vs,
         fragmentShader: fs,
         // wireframe: true,
         side: THREE.DoubleSide,
-        // wireframe: true
+        wireframe: true
       });
 
       let mesh = new THREE.Mesh(rectangle, material);
@@ -101,18 +104,17 @@ export default {
         let first = false, last = false;
           if(i == 0) first = true;
           if(i == this.points.length - 3) last = true;
-          
           this.calc(this.points[i],this.points[i+1],this.points[i+2],first,last);
       }
       
     },
     calc (head , middle, tail, first, end) {
       const x = head.x,
-      y = head.z,
+      y = head.y,
       x1 = middle.x,
-      y1 = middle.z,
+      y1 = middle.y,
       x2 = tail.x,
-      y2 = tail.z;
+      y2 = tail.y;
       
       let vec_prev = new THREE.Vector2(x1-x, y1-y).normalize();
       let vec_next = new THREE.Vector2(x2-x1, y2-y1).normalize();
@@ -148,16 +150,16 @@ export default {
             y: y - vec.y
         }
         if(normal.y < 0) {
-        this.downPosition.push(new THREE.Vector3(point4.x, 0, point4.y));
-        this.upPosition.push(new THREE.Vector3(point2.x, 0, point2.y));
+        this.downPosition.push(new THREE.Vector3(point4.x, point4.y, 0));
+        this.upPosition.push(new THREE.Vector3(point2.x, point2.y, 0));
         }
         else {
-          this.upPosition.push(new THREE.Vector3(point4.x, 0,point4.y ));
-          this.downPosition.push(new THREE.Vector3(point2.x, 0, point2.y ));
+          this.upPosition.push(new THREE.Vector3(point4.x, point4.y, 0));
+          this.downPosition.push(new THREE.Vector3(point2.x, point2.y, 0));
         }
         this.uv.push(0);
-        // console.log('point4',point4);
-        // console.log('point2', point2);
+        console.log('point4',point4);
+        console.log('point2', point2);
       }
       
       //point1是交点
@@ -167,13 +169,13 @@ export default {
       }
       console.log(x1,y1,normal)
       //下面是求点3的坐表
-      // console.log('point1', point1);
+      console.log('point1', point1);
       //垂直于vec_prev的单位向量,并且方向朝向三号节
       let point3 = {
         x: point1.x + vec3.x,
         y: point1.y + vec3.y
       }
-      // console.log('point3', point3, vec3);
+      console.log('point3', point3, vec3);
       //同理求点5的坐标
       vec_next.setLength(l * Math.cos(theta / 2));
       vec5 = new THREE.Vector2(vec_next.x - normal.x, vec_next.y - normal.y);
@@ -183,26 +185,21 @@ export default {
         x: point1.x + vec5.x,
         y: point1.y + vec5.y,
       }
-      // console.log('point5',point5);
+      console.log('point5',point5);
       if (normal.y < 0) { 
         console.log('???');
         //外积大于0,next在prev的逆时针
         let prevpoint = this.upPosition[this.upPosition.length - 1];
-        this.upPosition.push(new THREE.Vector3(point3.x, 0, point3.y ), new THREE.Vector3(point5.x, 0, point5.y));
-        this.downPosition.push(new THREE.Vector3(point1.x,  0, point1.y), new THREE.Vector3(point1.x, 0, point1.y));
+        this.upPosition.push(new THREE.Vector3(point3.x, point3.y, 0), new THREE.Vector3(point5.x, point5.y, 0));
+        this.downPosition.push(new THREE.Vector3(point1.x, point1.y, 0), new THREE.Vector3(point1.x, point1.y, 0));
         let scale = this.distance(prevpoint, point3) / this.width;
-        console.log(prevpoint.x, prevpoint.y, point3.x, point3.y);
-        console.log(this.distance(prevpoint, point3));
-        console.log('scale1:',scale);
         let prevUv = this.uv[this.uv.length - 1];
         this.uv.push(prevUv + scale,prevUv + scale);
       } else {
         let prevpoint = this.upPosition[this.upPosition.length - 1];
-        this.upPosition.push(new THREE.Vector3(point1.x, 0, point1.y ), new THREE.Vector3(point1.x, 0, point1.y ));
-        this.downPosition.push(new THREE.Vector3(point3.x, 0, point3.y ), new THREE.Vector3(point5.x, 0, point5.y ));
+        this.upPosition.push(new THREE.Vector3(point1.x, point1.y, 0), new THREE.Vector3(point1.x, point1.y, 0));
+        this.downPosition.push(new THREE.Vector3(point3.x, point3.y, 0), new THREE.Vector3(point5.x, point5.y, 0));
         let scale = this.distance(prevpoint, point1) / this.width;
-        // console.log(prevpoint, point1);
-        // console.log('scale2:', scale * this.width);
         let prevUv = this.uv[this.uv.length - 1];
         this.uv.push(prevUv + scale, prevUv + scale);
       }
@@ -219,18 +216,18 @@ export default {
             y: y2 - vec.y
         }
         let prevpoint = this.upPosition[this.upPosition.length - 1];
-        this.upPosition.push(new THREE.Vector3(point2.x, 0, point2.y));
-        this.downPosition.push(new THREE.Vector3(point4.x, 0, point4.y));
-        // console.log(this.downPosition.length, this.downPosition.length);
+        this.upPosition.push(new THREE.Vector3(point2.x, point2.y, 0));
+        this.downPosition.push(new THREE.Vector3(point4.x, point4.y, 0));
+        console.log(this.downPosition.length, this.downPosition.length);
         let prevUv = this.uv[this.uv.length - 1];
         
-        let scale = this.distance(prevpoint, point2) / this.width;
+        let scale = this.distance(prevpoint, point4) / this.width;
         this.uv.push(prevUv + scale);
       }
       
     },
     distance(point1, point2) {
-        return Math.sqrt((point2.x - point1.x) * (point2.x - point1.x) + (point2.y - point1.z) * (point2.y - point1.z));
+        return Math.sqrt((point2.x - point1.x) * (point2.x - point1.x) + (point2.y - point1.y) * (point2.y - point1.y));
     },
     cross(a, b){
       return a.x*b.y-a.y*b.x;

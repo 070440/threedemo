@@ -32,12 +32,9 @@ export default {
       this.scene = new THREE.Scene();
       let geometry = new THREE.PlaneGeometry(10, 10, 20);
       console.log(geometry.getAttribute('position'));
-    //   geometry.setAttribute('positon');
-      // let axis = new THREE.AxisHelper(250);
-      // this.scene.add(axis);
      
-     let arc1 = new THREE.ArcCurve(0, 0, 5, 0,2 * Math.PI,  true);
-      let arc2 = new THREE.ArcCurve(0, 0, 20,0, 2 * Math.PI,  true);
+     let arc1 = new THREE.ArcCurve(0, 0, 5, -Math.PI, 0,  true);
+      let arc2 = new THREE.ArcCurve(0, 0, 20,  -Math.PI,0,  true);
       let arr1 = arc1.getPoints(20);
       //console.log(arr1);
       let arr2 = arc2.getPoints(20);
@@ -52,16 +49,6 @@ export default {
         map: {
           value: new THREE.TextureLoader().load(rainbow)
         },
-  //       u_color: { value: new THREE.Vector3(1, 0, 0) },
-	// u_r: { value: 0.25 },
-	// u_edge: { value: 0.05 }
-        // u_resolution: {
-        //   value: new THREE.Vector2(
-        //     container.clientWidth,
-        //     container.clientHeight
-            
-        //   ),
-        // },
       };
 
     //   let textureLoader = new THREE.TextureLoader();

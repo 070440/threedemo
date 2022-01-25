@@ -12,6 +12,8 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import mixins from "../mixins/back.js";
 import json from "../assets/world.json";
 // import map from "../assets/blue2.jpg";
+
+const R = 100
 export default {
   mixins: [mixins],
   data() {
@@ -70,7 +72,7 @@ export default {
               for (let i = 0; i < polygon.length; i++) {
                 let [x, y] = polygon[i];
                 // console.log(x,y);
-                let result = this.uvToxyz(x, y, 400);
+                let result = this.uvToxyz(x, y, R);
                 x = result[0];
                 y = result[1];
                 let z = result[2];
@@ -96,7 +98,7 @@ export default {
             mutiPolygon.forEach((polygon) => {
               if (i === 0) i = 1;
               let [x, y] = polygon;
-              let result = this.uvToxyz(x, y, 400);
+              let result = this.uvToxyz(x, y, R);
                 x = result[0];
                 y = result[1];
                 let z = result[2];
@@ -113,59 +115,28 @@ export default {
       });
       this.$scene.add(this.$map);
 
-      // var geometry = new THREE.SphereGeometry( 400, 32, 32 );
-      // var material = new THREE.MeshBasicMaterial( {color: 0xffff00} );
-      // var sphere = new THREE.Mesh( geometry, material );
-      // this.$scene.add( sphere );
-      // let textureLoader = new THREE.TextureLoader();
-      // textureLoader.load(map, function (texture) {
-      //   material.map = texture
-      //   material.needsUpdate = true
-      // });
       let CylinderGeometry = new THREE.CylinderGeometry(10, 20, 20);
       let material = new THREE.MeshBasicMaterial({ color: 0xffff00,
       wireframe: true });
-      let cylinder = new THREE.Mesh(CylinderGeometry, material);
+      
       let longitude = 150, Latitude = -31.52;
-      // const [u,v] = this.lltouv(Latitude,longitude);
-      // console.log(u,v);
-      let [x,y,z] = this.uvToxyz(longitude,Latitude,400);
+
+      let [x,y,z] = this.uvToxyz(longitude,Latitude,R + 1);
       console.log(x,y,z);
       
-      const angleY = Math.atan(z / x);
-      const angleZ = Math.atan(y / Math.sqrt(x*x+z*z)); 
-      // let num1 = z / x, num2 = y / x;
-      // const angleY1 = Math.acos(1.0 / (1 +Math.sqrt(1 + num1 * num1)));
-      // const angleZ1 = Math.acos(Math.sqrt((1 + num1 * num1) / (1 + num1 * num1 + num2 * num2)));
-      // console.log(angleY1 / Math.PI * 180.0, angleZ1 / Math.PI * 180.0);
-      console.log(angleY / Math.PI * 180.0, angleZ / Math.PI * 180.0);
-      
-      
+      let matrix = new THREE.Matrix4();
 
-      // console.log(-angleZ + 0.4);
-      // x 调节 y方向图形的朝向
-      if(longitude >= -90  && longitude <= 90) {
-        cylinder.rotateOnAxis(new THREE.Vector3(1,0,0), Math.PI / 2);
-        cylinder.rotateOnAxis(new THREE.Vector3(0,0,1), Math.PI / 2);
-      }
-      else {
-        cylinder.rotateOnAxis(new THREE.Vector3(1,0,0), Math.PI / 2);
-        cylinder.rotateOnAxis(new THREE.Vector3(0,0,1), -Math.PI / 2);
-      }
-      cylinder.rotateOnAxis(new THREE.Vector3(0,0,1), angleY);
-      cylinder.rotateOnAxis(new THREE.Vector3(1,0,0), angleZ);
-      let deltaZ = Math.cos(angleZ) * 10 * Math.sin(angleY);
-      let deltaX = Math.cos(angleZ) * 10 * Math.cos(angleY);
-      let deltaY = Math.sin(angleZ) * 10;
-    
-    //  console.log(deltaX,deltaY,deltaZ)
-      // cylinder.rotateY(Math.PI / 2);
-      // cylinder.rotation.x =  angleX ;
-      // cylinder.rotation.y = angleY;z + deltaZ,
-      cylinder.position.set(x + deltaX,y + deltaY,z + deltaZ);
+      matrix.makeRotationX(Math.PI / 2);
+      matrix.setPosition(0, 0, -10);
+      CylinderGeometry.applyMatrix4(matrix)
       
-      // cylinder.position.set(x,y,z);
+      let cylinder = new THREE.Mesh(CylinderGeometry, material);
+      cylinder.position.set(x,y,z);
+    //   cylinder.lookAt(0,0,0);
+      CylinderGeometry.lookAt(new THREE.Vector3(0,0,0));
+      console.log(matrix)
       this.$scene.add(cylinder);
+    //   this.animate();
     },
     lltouv: function(longitude, Latitude) {
       let u, v;
@@ -182,6 +153,7 @@ export default {
   },
 };
 </script>
+
 
 <style>
 #container {
