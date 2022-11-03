@@ -35,14 +35,6 @@ const router = new Router({
       component: () => import("../components/Orthographic")
     },
     {
-      path: "/Animation",
-      component: () => import("../components/Animation")
-    },
-    {
-      path: "/Shadow",
-      component: () => import("../components/Shadow")
-    },
-    {
       path: "/Group",
       component: () => import("../components/Group")
     },
@@ -86,10 +78,6 @@ const router = new Router({
       path: "/EarthMatrix",
       component: () => import("../components/EarthMatrix")
     },
-    // {
-    //   path: "/Shader",
-    //   component: () => import("../components/Shader")
-    // },
     {
       path: "/RainbowShader",
       component: () => import("../components/RainbowShader")
@@ -147,9 +135,9 @@ const router = new Router({
       component: () => import("../components/testThickLine")
     },
     {
-      path: "/Duang",
-      component: () => import("../components/Duang")
-    }
+      path: "/China",
+      component: () => import("../components/China")
+    },
   ],
 });
 

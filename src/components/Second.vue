@@ -71,8 +71,8 @@ export default {
     //创建相机对象
     let container = document.getElementById("container");
     this.camera = new THREE.OrthographicCamera(-s * k, s * k, s, -s, 1, 1000);
-    this.camera.position.set(200, 300, 200); //设置相机位置
-    this.camera.lookAt(this.scene.position); //设置相机方向(指向的场景对象)
+    this.camera.position.set(-200, 300, 200); //设置相机位置
+    this.camera.lookAt(new THREE.Vector3(1000,0,0)); //设置相机方向(指向的场景对象)
 
     this.renderer = new THREE.WebGLRenderer();
     this.renderer.setSize(width, height);//设置渲染区域尺寸
